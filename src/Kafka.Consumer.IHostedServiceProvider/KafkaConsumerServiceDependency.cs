@@ -8,7 +8,7 @@ using PrimeFuncPack;
 
 namespace GGroupp.Infra.Kafka;
 
-public static class KafkaApiDependency
+public static class KafkaConsumerServiceDependency
 {
     public static Dependency<IHostedService> UseKafkaHostedService<TKey, TValue>(
         this Dependency<IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit>, KafkaOptions, RetryPolicyOptions> dependency)
@@ -16,10 +16,12 @@ public static class KafkaApiDependency
         _ = dependency ?? throw new ArgumentNullException(nameof(dependency));
 
         return dependency
-            .With(new ObjectDeserializer<TValue>())
+            .With(
+                new ObjectDeserializer<TValue>())
             .With(
                 sp => sp.GetRequiredService<ILoggerFactory>())
-            .Fold<IHostedService>(KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create);
+            .Fold<IHostedService>(
+                KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create);
     }
 
     public static IServiceCollection AddKafkaHostedService<TKey,TValue>(
