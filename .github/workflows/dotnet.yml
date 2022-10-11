@@ -27,17 +27,6 @@ jobs:
     - name: Add GGroupp NuGet Source
       run: dotnet nuget add source ${{ secrets.GGROUPP_NUGET_SOURCE_URL }} -n ggroupp -u ${{ secrets.GGROUPP_NUGET_SOURCE_USER_NAME }} -p ${{ secrets.GGROUPP_NUGET_SOURCE_USER_PASSWORD }} --store-password-in-clear-text
 
-    # Kafka.Producer.Abstractions
-    
-    - name: Restore Kafka.Producer.Abstractions
-      run: dotnet restore ./src/*/Kafka.Producer.Abstractions.csproj
-
-    - name: Build Kafka.Producer.Abstractions
-      run: dotnet build ./src/*/Kafka.Producer.Abstractions.csproj --no-restore  -c Release
-
-    - name: Pack Kafka.Producer.Abstractions
-      run: dotnet pack ./src/*/Kafka.Producer.Abstractions.csproj --no-restore -o ~/nuget  -c Release
-      
     # Kafka.Producer.Api
 
     - name: Restore Kafka.Producer.Api
