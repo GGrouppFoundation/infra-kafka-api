@@ -2,7 +2,7 @@ using Confluent.Kafka;
 
 namespace GGroupp.Infra.Kafka;
 
-public record ProducerKafkaOptions
+public sealed record class ProducerKafkaOptions
 {
     public ProducerKafkaOptions(
         string bootstrapServers, 

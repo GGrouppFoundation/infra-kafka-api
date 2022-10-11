@@ -8,7 +8,7 @@ namespace GGroupp.Infra.Kafka;
 
 partial class KafkaProducerApi<TKey, TValue, TSerializer>
 {
-    public async ValueTask<Unit> ProduceAsync(KeyValuePair<TKey, TValue> message, CancellationToken token)
+    public async ValueTask<Unit> InvokeAsync(KeyValuePair<TKey, TValue> message, CancellationToken token)
     {
         await producer.Value.ProduceAsync(
             producerKafkaOptions.Topic,
@@ -17,7 +17,8 @@ partial class KafkaProducerApi<TKey, TValue, TSerializer>
                 Key = message.Key,
                 Value = message.Value
             },
-            token);
+            token)
+            .ConfigureAwait(false);
         
         return default;
     }

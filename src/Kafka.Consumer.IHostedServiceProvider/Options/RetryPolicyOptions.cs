@@ -2,7 +2,7 @@ using System;
 
 namespace GGroupp.Infra.Kafka;
 
-public record RetryPolicyOptions
+public sealed record class RetryPolicyOptions
 {
     public RetryPolicyOptions(int retryCount, TimeSpan medianFirstRetryDelay)
     {

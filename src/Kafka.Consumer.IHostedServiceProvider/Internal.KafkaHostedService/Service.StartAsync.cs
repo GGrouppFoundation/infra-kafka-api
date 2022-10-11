@@ -58,7 +58,7 @@ partial class KafkaHostedService<TKey, TValue, TSerializer>
 
         while (consumer.Consume(token) is { } result)
         {
-            await messageHandler(result, token).ConfigureAwait(false);
+            await messageHandler.InvokeAsync(result, token).ConfigureAwait(false);
 
             if (kafkaOptions.EnableAutoCommit is false)
             {

@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,47 +11,44 @@ namespace GGroupp.Infra.Kafka;
 public static class KafkaApiDependency
 {
     public static Dependency<IHostedService> UseKafkaHostedService<TKey, TValue>(
-        this Dependency<KafkaOptions, RetryPolicyOptions,
-            Func<ConsumeResult<TKey, TValue>, CancellationToken, ValueTask>> dependency)
+        this Dependency<IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit>, KafkaOptions, RetryPolicyOptions> dependency)
     {
         _ = dependency ?? throw new ArgumentNullException(nameof(dependency));
 
-        return dependency.With(new ObjectSerializer<TValue>())
+        return dependency
+            .With(new ObjectDeserializer<TValue>())
             .With(
-                sp => sp.GetRequiredService<ILoggerFactory>()
-                    .CreateLogger<KafkaHostedService<TKey, TValue, ObjectSerializer<TValue>>>())
-            .Fold<IHostedService>(KafkaHostedService<TKey, TValue, ObjectSerializer<TValue>>.Create);
+                sp => sp.GetRequiredService<ILoggerFactory>())
+            .Fold<IHostedService>(KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create);
     }
 
-    public static void AddKafkaHostedService<TKey,TValue>(
+    public static IServiceCollection AddKafkaHostedService<TKey,TValue>(
         this IServiceCollection serviceCollection,
+        IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit> messageHandler,
         KafkaOptions kafkaOptions,
-        RetryPolicyOptions retryPolicyOptions,
-        Func<ConsumeResult<TKey, TValue>, CancellationToken, ValueTask> messageHandler)
-    {
+        RetryPolicyOptions retryPolicyOptions)
+        =>
         serviceCollection
             .AddHostedService(
-                sp => KafkaHostedService<TKey, TValue, ObjectSerializer<TValue>>.Create(
+                sp => KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create(
                     kafkaOptions: kafkaOptions,
                     retryPolicyOptions: retryPolicyOptions,
                     messageHandler: messageHandler,
-                    objectSerializer: new ObjectSerializer<TValue>(),
-                    logger: sp.GetLogger<TKey, TValue>()));
-
-    }
+                    objectSerializer: new ObjectDeserializer<TValue>(),
+                    loggerFactory: sp.GetRequiredService<ILoggerFactory>()));
     
     public static IServiceCollection AddKafkaHostedService<TKey,TValue>(
         this IServiceCollection serviceCollection,
-        Func<ConsumeResult<TKey, TValue>, CancellationToken, ValueTask> messageHandler)
+        IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit>messageHandler)
         =>
         serviceCollection
-            .AddHostedService<KafkaHostedService<TKey, TValue, ObjectSerializer<TValue>>>(
-                sp => KafkaHostedService<TKey, TValue, ObjectSerializer<TValue>>.Create(
+            .AddHostedService<KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>>(
+                sp => KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create(
                     kafkaOptions: sp.GetKafkaOptions(),
                     retryPolicyOptions: sp.GetRetryPolicyOptions(),
                     messageHandler: messageHandler,
-                    objectSerializer: new ObjectSerializer<TValue>(),
-                    logger: sp.GetLogger<TKey, TValue>()));
+                    objectSerializer: new ObjectDeserializer<TValue>(),
+                    loggerFactory: sp.GetRequiredService<ILoggerFactory>()));
 
     private static KafkaOptions GetKafkaOptions(this IServiceProvider serviceProvider)
         =>
@@ -84,10 +79,4 @@ public static class KafkaApiDependency
         new(
             retryCount: retryPolicySection.GetValue<int>("RetryCount"),
             medianFirstRetryDelay: retryPolicySection.GetValue<TimeSpan>("MedianFirstRetryDelay"));
-    
-    private static ILogger GetLogger<TKey,TValue>(this IServiceProvider serviceProvider)
-        => 
-        serviceProvider
-            .GetRequiredService<ILoggerFactory>()
-            .CreateLogger<KafkaHostedService<TKey, TValue, ObjectSerializer<TValue>>>();
 }

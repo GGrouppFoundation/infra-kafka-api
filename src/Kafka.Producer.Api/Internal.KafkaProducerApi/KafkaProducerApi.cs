@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Confluent.Kafka;
 
 namespace GGroupp.Infra.Kafka;
 
-internal sealed partial class KafkaProducerApi<TKey, TValue, TSerializer> : IKafkaProducer<TKey, TValue>
-    where TSerializer : ISerializer<TValue>, IDeserializer<TValue>
+internal sealed partial class KafkaProducerApi<TKey, TValue, TSerializer> : IAsyncValueFunc<KeyValuePair<TKey,TValue>, Unit>
+    where TSerializer : ISerializer<TValue>
 {
     private readonly Lazy<IProducer<TKey, TValue>> producer;
 

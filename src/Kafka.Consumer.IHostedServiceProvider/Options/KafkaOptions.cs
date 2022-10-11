@@ -2,7 +2,7 @@ using Confluent.Kafka;
 
 namespace GGroupp.Infra.Kafka;
 
-public record KafkaOptions
+public sealed record class KafkaOptions
 {
     public KafkaOptions(
         string bootstrapServers, 
