@@ -8,7 +8,7 @@ using Polly.Contrib.WaitAndRetry;
 
 namespace GGroupp.Infra.Kafka;
 
-partial class KafkaHostedService<TKey, TValue, TSerializer>
+partial class KafkaHostedService<TKey, TValue>
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {

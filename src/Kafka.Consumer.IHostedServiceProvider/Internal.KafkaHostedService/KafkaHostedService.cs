@@ -7,14 +7,13 @@ using Microsoft.Extensions.Logging;
 
 namespace GGroupp.Infra.Kafka;
 
-internal sealed partial class KafkaHostedService<TKey, TValue, TSerializer> : IHostedService
-    where TSerializer : IDeserializer<TValue>
+internal sealed partial class KafkaHostedService<TKey, TValue> : IHostedService
 {
     private readonly KafkaOptions kafkaOptions;
     
     private readonly RetryPolicyOptions retryPolicyOptions;
     
-    private readonly TSerializer objectSerializer;
+    private readonly IDeserializer<TValue> objectSerializer;
     
     private readonly ILogger logger;
     
@@ -24,11 +23,11 @@ internal sealed partial class KafkaHostedService<TKey, TValue, TSerializer> : IH
 
     private CancellationTokenSource? cancellationTokenSource;
 
-    public static KafkaHostedService<TKey, TValue, TSerializer> Create(
+    public static KafkaHostedService<TKey, TValue> Create(
         IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit> messageHandler,
         KafkaOptions kafkaOptions,
         RetryPolicyOptions retryPolicyOptions,
-        TSerializer objectSerializer,
+        IDeserializer<TValue> objectSerializer,
         ILoggerFactory loggerFactory)
         => 
         new(
@@ -36,12 +35,12 @@ internal sealed partial class KafkaHostedService<TKey, TValue, TSerializer> : IH
             retryPolicyOptions ?? throw new ArgumentNullException(nameof(retryPolicyOptions)),
             objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer)),
             messageHandler ?? throw new ArgumentNullException(nameof(messageHandler)),
-            loggerFactory?.CreateLogger<KafkaHostedService<TKey, TValue, TSerializer>>() ?? throw new ArgumentNullException(nameof(logger)));
+            loggerFactory?.CreateLogger<KafkaHostedService<TKey, TValue>>() ?? throw new ArgumentNullException(nameof(loggerFactory)));
     
     private KafkaHostedService(
         KafkaOptions kafkaOptions, 
         RetryPolicyOptions retryPolicyOptions, 
-        TSerializer objectSerializer,
+        IDeserializer<TValue> objectSerializer,
         IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit> messageHandler,
         ILogger logger)
     {

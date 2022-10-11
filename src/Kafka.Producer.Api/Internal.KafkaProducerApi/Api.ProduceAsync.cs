@@ -6,7 +6,7 @@ using Confluent.Kafka;
 
 namespace GGroupp.Infra.Kafka;
 
-partial class KafkaProducerApi<TKey, TValue, TSerializer>
+partial class KafkaProducerApi<TKey, TValue>
 {
     public async ValueTask<Unit> InvokeAsync(KeyValuePair<TKey, TValue> message, CancellationToken token)
     {

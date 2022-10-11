@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GGroupp.Infra.Kafka;
 
-partial class KafkaHostedService<TKey, TValue, TSerializer>
+partial class KafkaHostedService<TKey, TValue>
 {
     public async Task StopAsync(CancellationToken cancellationToken)
     {

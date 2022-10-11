@@ -17,21 +17,21 @@ public static class KafkaProducerApiDependency
             .With(
                 new ObjectSerializer<TValue>())
             .Fold<IAsyncValueFunc<KeyValuePair<TKey,TValue>, Unit>>(
-                KafkaProducerApi<TKey,TValue,ObjectSerializer<TValue>>.Create);
+                KafkaProducerApi<TKey,TValue>.Create);
     }
 
     public static IServiceCollection AddKafkaProducer<TKey, TValue>(this IServiceCollection serviceCollection)
         =>
         serviceCollection
-            .AddSingleton<IAsyncValueFunc<KeyValuePair<TKey,TValue>, Unit>, KafkaProducerApi<TKey, TValue, ObjectSerializer<TValue>>>(
+            .AddSingleton<IAsyncValueFunc<KeyValuePair<TKey,TValue>, Unit>, KafkaProducerApi<TKey, TValue>>(
                 GetKafkaProducerApi<TKey,TValue>);
 
-    private static KafkaProducerApi<TKey, TValue, ObjectSerializer<TValue>> GetKafkaProducerApi<TKey, TValue>(
+    private static KafkaProducerApi<TKey, TValue> GetKafkaProducerApi<TKey, TValue>(
         IServiceProvider serviceProvider)
         => 
-        KafkaProducerApi<TKey, TValue, ObjectSerializer<TValue>>.Create(
+        KafkaProducerApi<TKey, TValue>.Create(
             serviceProvider.GetKafkaOptions(), 
-            new());
+            new ObjectSerializer<TValue>());
 
     private static ProducerKafkaOptions GetKafkaOptions(this IServiceProvider serviceProvider)
         => 

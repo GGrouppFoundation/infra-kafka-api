@@ -21,7 +21,7 @@ public static class KafkaConsumerServiceDependency
             .With(
                 sp => sp.GetRequiredService<ILoggerFactory>())
             .Fold<IHostedService>(
-                KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create);
+                KafkaHostedService<TKey, TValue>.Create);
     }
 
     public static IServiceCollection AddKafkaHostedService<TKey,TValue>(
@@ -32,7 +32,7 @@ public static class KafkaConsumerServiceDependency
         =>
         serviceCollection
             .AddHostedService(
-                sp => KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create(
+                sp => KafkaHostedService<TKey, TValue>.Create(
                     kafkaOptions: kafkaOptions,
                     retryPolicyOptions: retryPolicyOptions,
                     messageHandler: messageHandler,
@@ -44,8 +44,8 @@ public static class KafkaConsumerServiceDependency
         IAsyncValueFunc<ConsumeResult<TKey, TValue>, Unit>messageHandler)
         =>
         serviceCollection
-            .AddHostedService<KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>>(
-                sp => KafkaHostedService<TKey, TValue, ObjectDeserializer<TValue>>.Create(
+            .AddHostedService(
+                sp => KafkaHostedService<TKey, TValue>.Create(
                     kafkaOptions: sp.GetKafkaOptions(),
                     retryPolicyOptions: sp.GetRetryPolicyOptions(),
                     messageHandler: messageHandler,

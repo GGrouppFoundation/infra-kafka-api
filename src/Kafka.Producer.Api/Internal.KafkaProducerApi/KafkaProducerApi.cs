@@ -4,16 +4,15 @@ using Confluent.Kafka;
 
 namespace GGroupp.Infra.Kafka;
 
-internal sealed partial class KafkaProducerApi<TKey, TValue, TSerializer> : IAsyncValueFunc<KeyValuePair<TKey,TValue>, Unit>
-    where TSerializer : ISerializer<TValue>
+internal sealed partial class KafkaProducerApi<TKey, TValue> : IAsyncValueFunc<KeyValuePair<TKey,TValue>, Unit>
 {
     private readonly Lazy<IProducer<TKey, TValue>> producer;
 
     private readonly ProducerKafkaOptions producerKafkaOptions;
 
-    internal static KafkaProducerApi<TKey, TValue, TSerializer> Create(
+    internal static KafkaProducerApi<TKey, TValue> Create(
         ProducerKafkaOptions producerKafkaOptions,
-        TSerializer objectSerializer)
+        ISerializer<TValue> objectSerializer)
         => 
         new(
             producerKafkaOptions ?? throw new ArgumentNullException(nameof(producerKafkaOptions)),
@@ -21,7 +20,7 @@ internal sealed partial class KafkaProducerApi<TKey, TValue, TSerializer> : IAsy
 
     private KafkaProducerApi(
         ProducerKafkaOptions producerKafkaOptions, 
-        TSerializer objectSerializer)
+        ISerializer<TValue> objectSerializer)
     {
         this.producerKafkaOptions = producerKafkaOptions;
         
