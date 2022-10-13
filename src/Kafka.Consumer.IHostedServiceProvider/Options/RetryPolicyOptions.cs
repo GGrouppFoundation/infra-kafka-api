@@ -10,7 +10,7 @@ public sealed record class RetryPolicyOptions
         MedianFirstRetryDelay = medianFirstRetryDelay;
     }
 
-    internal int RetryCount { get; }
+    public int RetryCount { get; }
     
-    internal TimeSpan MedianFirstRetryDelay { get; }
+    public TimeSpan MedianFirstRetryDelay { get; }
 }

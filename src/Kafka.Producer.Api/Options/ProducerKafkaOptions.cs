@@ -1,5 +1,3 @@
-using Confluent.Kafka;
-
 namespace GGroupp.Infra.Kafka;
 
 public sealed record class ProducerKafkaOptions
@@ -12,7 +10,7 @@ public sealed record class ProducerKafkaOptions
         Topic = topic ?? string.Empty;
     }
 
-    internal string BootstrapServers { get; }
+    public string BootstrapServers { get; }
  
-    internal string Topic { get; }
+    public string Topic { get; }
 }

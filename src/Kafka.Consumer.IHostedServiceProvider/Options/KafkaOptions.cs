@@ -20,15 +20,15 @@ public sealed record class KafkaOptions
         EnableAutoOffsetStore = enableAutoOffsetStore;
     }
 
-    internal string BootstrapServers { get; }
+    public string BootstrapServers { get; }
  
-    internal string GroupId { get; }
+    public string GroupId { get; }
     
-    internal string Topic { get; }
+    public string Topic { get; }
     
-    internal AutoOffsetReset AutoOffsetReset { get; }
+    public AutoOffsetReset AutoOffsetReset { get; }
     
-    internal bool EnableAutoCommit { get; }
+    public bool EnableAutoCommit { get; }
     
-    internal bool EnableAutoOffsetStore { get; }
+    public bool EnableAutoOffsetStore { get; }
 }
