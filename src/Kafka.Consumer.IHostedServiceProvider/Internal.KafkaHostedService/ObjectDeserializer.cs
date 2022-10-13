@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Confluent.Kafka;
 
 namespace GGroupp.Infra.Kafka;
@@ -11,11 +10,7 @@ internal sealed class ObjectDeserializer<T> : IDeserializer<T>
 
     static ObjectDeserializer()
         =>
-        jsonSerializerOptions = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        jsonSerializerOptions = new(JsonSerializerDefaults.Web);
 
     public T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
     {

@@ -10,11 +10,7 @@ internal sealed class ObjectSerializer<T> : ISerializer<T>
 
     static ObjectSerializer()
         =>
-        jsonSerializerOptions = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        jsonSerializerOptions = new(JsonSerializerDefaults.Web);
     
     public byte[] Serialize(T data, SerializationContext context) 
         => 
