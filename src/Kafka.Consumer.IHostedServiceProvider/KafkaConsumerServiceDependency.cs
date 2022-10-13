@@ -19,7 +19,7 @@ public static class KafkaConsumerServiceDependency
             .With(
                 new ObjectDeserializer<TValue>())
             .With(
-                sp => sp.GetRequiredService<ILoggerFactory>())
+                static sp => sp.GetRequiredService<ILoggerFactory>())
             .Fold<IHostedService>(
                 KafkaHostedService<TKey, TValue>.Create);
     }
